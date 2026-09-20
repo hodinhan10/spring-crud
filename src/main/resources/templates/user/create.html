@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm người dùng</title>
+</head>
+<body>
+    <h1>Thêm người dùng</h1>
+
+    <form method="post" th:action="@{/user/create}" th:object="${user}">
+        <p>
+            <label for="name">Tên</label>
+            <input id="name" th:field="*{name}" required>
+        </p>
+        <p>
+            <label for="email">Email</label>
+            <input id="email" type="email" th:field="*{email}" required>
+        </p>
+        <p>
+            <label for="address">Địa chỉ</label>
+            <input id="address" th:field="*{address}" required>
+        </p>
+        <button type="submit">Lưu</button>
+        <a th:href="@{/user}">Hủy</a>
+    </form>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý người dùng</title>
+    <style>
+        table { border-collapse: collapse; }
+        table, th, td { border: 1px solid; }
+    </style>
+</head>
+<body>
+    <h1>Danh sách người dùng</h1>
+    <p><a th:href="@{/user/create}">Thêm người dùng</a></p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>Địa chỉ</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td th:text="${user.address}"></td>
+                <td>
+                    <a th:href="@{/user/{id}(id=${user.id})}">Sửa</a>
+                    <form method="post" th:action="@{/user/delete/{id}(id=${user.id})}">
+                        <button type="submit">Xóa</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><a th:href="@{/}">Về trang chủ</a></p>
+</body>
+</html>
