@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách</title>
+</head>
+
+<body>
+    <main>
+        <a href="/user/create">+ Thêm người dùng</a>
+        <br><br>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Địa chỉ</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody id="user-rows">
+            </tbody>
+        </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/axios-config.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const userRows = document.getElementById("user-rows");
+
+        const fetchUsers = async () => {
+            const { data } = await userApi.list().catch(() =>  []);
+            if (!data || data.length === 0) {
+                userRows.innerHTML = `tr><td colspan="5">Không có dữ liệu</td></tr>`;
+            } else {
+                userRows.innerHTML = data.map((user) => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.address}</td>
+                    <td>
+                        <a href="/user/${user.id}/edit">Sửa</a>
+                        <button onclick="onDeleteUser(${user.id})">Xóa</button>
+                    </td>
+                </tr>
+                `).join("");
+             }
+        }
+
+        const onDeleteUser = async (id) => {
+            const confirmDelete = window.confirm("Bạn có chắc muốn xoá không?");
+            if (!confirmDelete) return;
+            await userApi.remove(id);
+            await fetchUsers();
+        };
+
+        fetchUsers();
+    </script>
+</body>
+</html>

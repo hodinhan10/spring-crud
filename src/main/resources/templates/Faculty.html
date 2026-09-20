@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách khoa</title>
+</head>
+<body>
+    <main>
+        <a href="/">Trang chủ</a>
+        <h1>Danh sách khoa</h1>
+        <label for="faculty-select">Chọn khoa</label>
+        <select id="faculty-select" onchange="goToStudents(this.value)">
+            <option value="">-- Chọn khoa --</option>
+        </select>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/axios-config.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const facultySelect = document.getElementById("faculty-select");
+
+        const loadFaculties = async () => {
+            const { data } = await facultyApi.list().catch(() => ({ data: [] }));
+            facultySelect.innerHTML += data.map((faculty) => `
+                <option value="${faculty.id}">${faculty.name}</option>
+            `).join("");
+        };
+
+        const goToStudents = (facultyId) => {
+            if (facultyId) window.location.href = `/student?facultyId=${facultyId}`;
+        };
+
+        loadFaculties();
+    </script>
+</body>
+</html>

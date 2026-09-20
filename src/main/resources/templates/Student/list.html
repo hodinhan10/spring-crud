@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách sinh viên</title>
+</head>
+<body>
+    <main>
+        <a href="/">Trang chủ</a>
+        <a href="/faculty">Danh sách khoa</a>
+        <h1>Danh sách sinh viên</h1>
+        <a id="create-student" href="/student/create">+ Thêm sinh viên</a>
+
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="student-rows"></tbody>
+        </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/axios-config.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const studentRows = document.getElementById("student-rows");
+        const createStudent = document.getElementById("create-student");
+
+        const fetchStudents = async () => {
+            const { data = [] } = await studentApi.list().catch(() => ({ data: [] }));
+
+            if (!data.length) {
+                studentRows.innerHTML = '<tr><td colspan="4">Không có dữ liệu</td></tr>';
+                return;
+            }
+
+            studentRows.innerHTML = data.map((student) => `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>
+                        <a href="/student/${student.id}/edit">Sửa</a>
+                        <button onclick="deleteStudent(${student.id})">Xóa</button>
+                    </td>
+                </tr>
+            `).join("");
+        };
+
+        const deleteStudent = async (id) => {
+            if (!window.confirm("Bạn có chắc muốn xóa sinh viên này không?")) return;
+            await studentApi.remove(id);
+            await fetchStudents();
+        };
+
+        fetchStudents();
+    </script>
+</body>
+</html>

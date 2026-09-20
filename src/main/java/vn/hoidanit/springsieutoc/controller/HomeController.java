@@ -13,16 +13,36 @@ public class HomeController {
 
 	@GetMapping("/user")
 	public String users() {
-		return "user/show";
+		return "user/list";
 	}
 
 	@GetMapping("/user/create")
 	public String createUser() {
-		return "user/create";
+		return "user/CreateOrEdit";
 	}
 
 	@GetMapping("/user/{id}/edit")
 	public String updateUser() {
-		return "user/update";
+		return "user/CreateOrEdit";
+	}
+
+	@GetMapping("/faculty")
+	public String faculties() {
+		return "Faculty";
+	}
+
+	@GetMapping("/student")
+	public String students() {
+		return "Student/list";
+	}
+
+	@GetMapping("/student/create")
+	public String createStudent() {
+		return "Student/CreateOrEdit";
+	}
+
+	@GetMapping("/student/{id}/edit")
+	public String updateStudent() {
+		return "Student/CreateOrEdit";
 	}
 }
