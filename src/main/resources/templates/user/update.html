@@ -1,28 +1,80 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Cập nhật người dùng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cập nhật người dùng | Spring Siêu Tốc</title>
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
-    <h1>Cập nhật người dùng</h1>
+    <header class="topbar">
+        <div class="container nav">
+            <a class="brand" href="/">SPRING / DASHBOARD</a>
+            <nav class="nav-links">
+                <a href="/user">Người dùng</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="eyebrow">Product / User manager</div>
+        <h1>Cập nhật người dùng</h1>
+        <div class="form-card">
+            <form id="user-form">
+                <div class="form-grid">
+                    <label for="name">
+                        Tên
+                        <input id="name" name="name" required>
+                    </label>
+                    <label for="email">
+                        Email
+                        <input id="email" name="email" type="email" required>
+                    </label>
+                    <label for="address">
+                        Địa chỉ
+                        <input id="address" name="address" required>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button class="button" type="submit">Lưu thay đổi</button>
+                    <a class="button secondary" href="/user">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/axios-config.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const form = document.querySelector("#user-form");
+        const userId = window.location.pathname.split("/")[2];
 
-    <form method="post" th:action="@{/user/update}" th:object="${user}">
-        <input type="hidden" th:field="*{id}">
-        <p>
-            <label for="name">Tên</label>
-            <input id="name" th:field="*{name}" required>
-        </p>
-        <p>
-            <label for="email">Email</label>
-            <input id="email" type="email" th:field="*{email}" required>
-        </p>
-        <p>
-            <label for="address">Địa chỉ</label>
-            <input id="address" th:field="*{address}" required>
-        </p>
-        <button type="submit">Lưu thay đổi</button>
-        <a th:href="@{/user}">Hủy</a>
-    </form>
+        async function loadUser() {
+            try {
+                const { data } = await userApi.detail(userId);
+                form.elements.namedItem("name").value = data.name;
+                form.elements.namedItem("email").value = data.email;
+                form.elements.namedItem("address").value = data.address;
+            } catch (error) {
+                form.querySelector("button[type=submit]").disabled = true;
+            }
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const data = {
+                name: form.elements.namedItem("name").value.trim(),
+                email: form.elements.namedItem("email").value.trim(),
+                address: form.elements.namedItem("address").value.trim(),
+            };
+
+            await userApi.update(userId, data).then(() => {
+                window.location.href = "/user";
+            });
+
+        });
+
+        loadUser();
+    </script>
 </body>
 </html>

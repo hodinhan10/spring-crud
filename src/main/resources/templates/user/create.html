@@ -1,27 +1,66 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thêm người dùng</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Thêm người dùng | Spring Siêu Tốc</title>
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
-    <h1>Thêm người dùng</h1>
+    <header class="topbar">
+        <div class="container nav">
+            <a class="brand" href="/">SPRING / DASHBOARD</a>
+            <nav class="nav-links">
+                <a href="/user">Người dùng</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="eyebrow">Product / User manager</div>
+        <h1>Thêm người dùng</h1>
+        <div class="form-card">
+            <form id="user-form" data-mode="create">
+                <div class="form-grid">
+                    <label for="name">
+                        Tên
+                        <input id="name" name="name" required>
+                    </label>
+                    <label for="email">
+                        Email
+                        <input id="email" name="email" type="email" required>
+                    </label>
+                    <label for="address">
+                        Địa chỉ
+                        <input id="address" name="address" required>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button class="button" type="submit">Lưu người dùng</button>
+                    <a class="button secondary" href="/user">Hủy</a>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/axios-config.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const form = document.querySelector("#user-form");
 
-    <form method="post" th:action="@{/user/create}" th:object="${user}">
-        <p>
-            <label for="name">Tên</label>
-            <input id="name" th:field="*{name}" required>
-        </p>
-        <p>
-            <label for="email">Email</label>
-            <input id="email" type="email" th:field="*{email}" required>
-        </p>
-        <p>
-            <label for="address">Địa chỉ</label>
-            <input id="address" th:field="*{address}" required>
-        </p>
-        <button type="submit">Lưu</button>
-        <a th:href="@{/user}">Hủy</a>
-    </form>
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const data = {
+                name: form.elements.namedItem("name").value.trim(),
+                email: form.elements.namedItem("email").value.trim(),
+                address: form.elements.namedItem("address").value.trim(),
+            };
+
+            await userApi.create(data).then(() => {
+                window.location.href = "/user";
+            });
+
+        });
+    </script>
 </body>
 </html>

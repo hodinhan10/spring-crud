@@ -3,18 +3,21 @@ package vn.hoidanit.springsieutoc.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.springsieutoc.model.User;
 import vn.hoidanit.springsieutoc.service.UserService;
 
-@Controller
+@RestController
+@RequestMapping("/api/users")
 public class UserController {
 
 	private final UserService userService;
@@ -23,46 +26,37 @@ public class UserController {
 		this.userService = userService;
 	}
 
-	@GetMapping("/user")
-	public String getUserPage(Model model) {
-		List<User> users = this.userService.fetchUsers();
-		model.addAttribute("users", users);
-		return "user/show";
+	@GetMapping
+	public List<User> getUsers() {
+		return this.userService.fetchUsers();
 	}
 
-	@GetMapping("/user/create")
-	public String getCreateUserPage(Model model) {
-		model.addAttribute("user", new User());
-		return "user/create";
+	@GetMapping("/{id}")
+	public ResponseEntity<User> getUser(@PathVariable int id) {
+		return this.userService.fetchUserById(id)
+				.map(ResponseEntity::ok)
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
-	@PostMapping("/user/create")
-	public String postCreateUser(@ModelAttribute User user) {
-		this.userService.createUser(user);
-		return "redirect:/user";
+	@PostMapping
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+		return ResponseEntity.status(HttpStatus.CREATED).body(this.userService.createUser(user));
 	}
 
-	@GetMapping("/user/{id}")
-	public String getUpdateUserPage(Model model, @PathVariable int id) {
-		User updateUser = this.userService.fetchUserById(id).orElse(null);
-		if (updateUser == null)	return "redirect:/user";
-		model.addAttribute("user", updateUser);
-		return "user/update";
-	}
-
-	@PostMapping("/user/update")
-	public String postUpdatePage(@ModelAttribute User updateUser) {
-		if (this.userService.updateUser(updateUser)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+	@PutMapping("/{id}")
+	public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User updateUser) {
+		updateUser.setId(id);
+		if (!this.userService.updateUser(updateUser)) {
+			return ResponseEntity.notFound().build();
 		}
-		return "redirect:/user";
+		return ResponseEntity.ok(updateUser);
 	}
 
-	@PostMapping("/user/delete/{id}")
-	public String postDeleteUser(@PathVariable int id) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable int id) {
 		if (!this.userService.deleteUser(id)) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+			return ResponseEntity.notFound().build();
 		}
-		return "redirect:/user";
+		return ResponseEntity.noContent().build();
 	}
 }
