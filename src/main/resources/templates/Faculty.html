@@ -10,7 +10,7 @@
         <a href="/">Trang chủ</a>
         <h1>Danh sách khoa</h1>
         <label for="faculty-select">Chọn khoa</label>
-        <select id="faculty-select" onchange="goToStudents(this.value)">
+        <select id="faculty-select" onchange="onGoToStudents(this.value)">
             <option value="">-- Chọn khoa --</option>
         </select>
     </main>
@@ -21,18 +21,18 @@
     <script>
         const facultySelect = document.getElementById("faculty-select");
 
-        const loadFaculties = async () => {
+        const fetchFaculties = async () => {
             const { data } = await facultyApi.list().catch(() => ({ data: [] }));
             facultySelect.innerHTML += data.map((faculty) => `
                 <option value="${faculty.id}">${faculty.name}</option>
             `).join("");
         };
 
-        const goToStudents = (facultyId) => {
+        const onGoToStudents = (facultyId) => {
             if (facultyId) window.location.href = `/student?facultyId=${facultyId}`;
         };
 
-        loadFaculties();
+        fetchFaculties();
     </script>
 </body>
 </html>

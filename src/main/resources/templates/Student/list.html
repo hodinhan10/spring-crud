@@ -47,13 +47,13 @@
                     <td>${student.email}</td>
                     <td>
                         <a href="/student/${student.id}/edit">Sửa</a>
-                        <button onclick="deleteStudent(${student.id})">Xóa</button>
+                        <button onclick="onDeleteStudent(${student.id})">Xóa</button>
                     </td>
                 </tr>
             `).join("");
         };
 
-        const deleteStudent = async (id) => {
+        const onDeleteStudent = async (id) => {
             if (!window.confirm("Bạn có chắc muốn xóa sinh viên này không?")) return;
             await studentApi.remove(id);
             await fetchStudents();

@@ -15,26 +15,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.springsieutoc.model.Student;
-import vn.hoidanit.springsieutoc.service.StudentService;
+import vn.hoidanit.springsieutoc.service.FacultyService;
 
 @RestController
 @RequestMapping("/api/students")
 public class StudentRestController {
 
-    private final StudentService studentService;
+    private final FacultyService facultyService;
 
-    public StudentRestController(StudentService studentService) {
-        this.studentService = studentService;
+    public StudentRestController(FacultyService facultyService) {
+        this.facultyService = facultyService;
     }
 
     @GetMapping
     public List<Student> getStudents() {
-        return studentService.fetchStudents();
+        return facultyService.getAllStudents();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Student> getStudent(@PathVariable Long id) {
-        return studentService.fetchStudentById(id)
+        return facultyService.getStudentById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -43,7 +43,7 @@ public class StudentRestController {
     public ResponseEntity<Student> createStudent(
             @RequestParam Long facultyId,
             @RequestBody Student student) {
-        return studentService.createStudent(facultyId, student)
+        return facultyService.createStudent(facultyId, student)
                 .map(createdStudent -> ResponseEntity.status(HttpStatus.CREATED).body(createdStudent))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -53,7 +53,7 @@ public class StudentRestController {
             @PathVariable Long id,
             @RequestBody Student updatedStudent) {
         updatedStudent.setId(id);
-        if (!studentService.updateStudent(updatedStudent)) {
+            if (!facultyService.updateStudent(updatedStudent)) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(updatedStudent);
@@ -61,7 +61,7 @@ public class StudentRestController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
-        if (!studentService.deleteStudent(id)) {
+        if (!facultyService.deleteStudent(id)) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();

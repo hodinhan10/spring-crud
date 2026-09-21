@@ -63,7 +63,7 @@
         document.getElementById("title").textContent = isEdit ? "Cập nhật sinh viên" : "Thêm sinh viên";
         document.getElementById("submit").textContent = isEdit ? "Cập nhật" : "Lưu";
 
-        const loadFaculties = async () => {
+        const fetchFaculties = async () => {
             const { data } = await facultyApi.list().catch(() => ({ data: [] }));
             facultySelect.innerHTML = facultySelect.innerHTML + 
             data.map((faculty) => `
@@ -71,7 +71,7 @@
             `).join("");
         };
 
-        const loadStudent = async () => {
+        const fetchStudent = async () => {
             if (!isEdit) return;
             document.getElementById("faculty-field").hidden = true;
 
@@ -95,8 +95,8 @@
             window.location.href = "/student";
         });
 
-    loadStudent();
-    loadFaculties();
+    fetchStudent();
+    fetchFaculties();
     </script>
 </body>
 </html>
