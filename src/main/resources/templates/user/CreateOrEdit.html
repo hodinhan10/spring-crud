@@ -56,7 +56,7 @@
         const [, , , userId] = window.location.pathname.split("/");
         const isEdit = Number(userId);
 
-        document.getElementById("title").textContent = isEdit ? "Cập nhật" : "Thêm";
+        document.getElementById("title").textContent = isEdit ? "Cập nhật người dùng" : "Thêm người dùng";
         document.getElementById("submit").textContent = isEdit ? "Cập nhật" : "Lưu";
 
         const fetchApi = async () => {
