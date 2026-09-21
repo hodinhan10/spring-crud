@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý người dùng</title>
+    <style>
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 600px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <a href="/">Trang chủ</a><br>
+        <h1 id="form-title">Thêm người dùng</h1>
+        <form class="form" id="user-form">
+            <div class="field">
+                <label for="name">Tên</label>
+                <input id="name" name="name" required>
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" required>
+            </div>
+            <div class="field">
+                <label for="address">Địa chỉ</label>
+                <input id="address" name="address" required>
+            </div>
+            <div class="actions">
+                <button type="submit">Lưu</button>
+                <button type="button" onclick="onResetForm()">Hủy</button>
+            </div>
+        </form>
+
+        <h2>Danh sách người dùng</h2>
+        <form id="search-form">
+            <input type="text" name="keyword" placeholder="Tên, email hoặc địa chỉ">
+            <button type="submit">Tìm kiếm</button>
+        </form>
+        <br>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Địa chỉ</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody id="user-rows">
+            </tbody>
+        </table>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const userRows = document.getElementById("user-rows");
+        const searchForm = document.getElementById("search-form");
+        const userForm = document.getElementById("user-form");
+        let editingUserId = null;
+
+        const onResetForm = () => {
+            editingUserId = null;
+            userForm.reset();
+            document.getElementById("form-title").textContent = "Thêm người dùng";
+        };
+
+        const fetchUsers = async (keyword = "") => {
+            const { data } = await userApi.list(keyword).catch(() => ({ data: [] }));
+            if (!data || data.length === 0) {
+                userRows.innerHTML = `<tr><td colspan="5">Không có dữ liệu</td></tr>`;
+            } else {
+                userRows.innerHTML = data.map((user) => `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.address}</td>
+                    <td>
+                        <button type="button" onclick="onEditUser(${user.id})">Sửa</button>
+                        <button type="button" onclick="onDeleteUser(${user.id})">Xóa</button>
+                    </td>
+                </tr>
+                `).join("");
+            }
+        }
+
+        const onEditUser = async (id) => {
+            const { data } = await userApi.detail(id);
+            editingUserId = id;
+            document.getElementById("form-title").textContent = "Sửa người dùng";
+            userForm.elements.name.value = data.name;
+            userForm.elements.email.value = data.email;
+            userForm.elements.address.value = data.address;
+        };
+
+        const onDeleteUser = async (id) => {
+            const confirmDelete = window.confirm("Bạn có chắc muốn xoá không?");
+            if (!confirmDelete) return;
+            await userApi.remove(id);
+            if (editingUserId === id) onResetForm();
+            await fetchUsers(searchForm.elements.keyword.value);
+        };
+
+        userForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const data = {
+                name: userForm.elements.name.value.trim(),
+                email: userForm.elements.email.value.trim(),
+                address: userForm.elements.address.value.trim(),
+            };
+
+            if (editingUserId) await userApi.update(editingUserId, data);
+            else await userApi.create(data);
+
+            onResetForm();
+            await fetchUsers(searchForm.elements.keyword.value);
+        });
+
+        searchForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            await fetchUsers(searchForm.elements.keyword.value);
+        });
+
+        fetchUsers();
+    </script>
+</body>
+</html>

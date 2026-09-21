@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý sinh viên</title>
+    <style>
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 50%;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <a href="/">Trang chủ</a>
+        <h1>Quản lý sinh viên</h1>
+
+        <label for="faculty-select">Chọn khoa</label>
+        <select id="faculty-select" onchange="onChangeFaculty(this.value)">
+            <option value="">-- Chọn khoa --</option>
+        </select>
+
+        <section id="student-section" hidden>
+            <h2 id="form-title">Thêm sinh viên</h2>
+            <form class="form" id="student-form">
+                <div class="field">
+                    <label for="name">Tên</label>
+                    <input id="name" name="name" required>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input id="email" name="email" type="email" required>
+                </div>
+                <div class="actions">
+                    <button type="submit">Lưu</button>
+                    <button type="button" onclick="onResetForm()">Hủy</button>
+                </div>
+            </form>
+
+            <h2>Danh sách sinh viên</h2>
+            <form id="search-form">
+                <input name="keyword" placeholder="Tên hoặc email">
+                <button type="submit">Tìm kiếm</button>
+            </form>
+            <br>
+
+            <table border="1" cellpadding="8" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="student-rows"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.7.9/dist/axios.min.js"></script>
+    <script src="/js/api.js"></script>
+    <script>
+        const facultySelect = document.getElementById("faculty-select");
+        const studentSection = document.getElementById("student-section");
+        const studentForm = document.getElementById("student-form");
+        const searchForm = document.getElementById("search-form");
+        const studentRows = document.getElementById("student-rows");
+        let facultyId = null;
+        let editingStudentId = null;
+
+        const fetchFaculties = async () => {
+            const { data } = await facultyApi.list().catch(() => ({ data: [] }));
+            facultySelect.innerHTML += data.map((faculty) => `
+                <option value="${faculty.id}">${faculty.name}</option>
+            `).join("");
+        };
+
+        const fetchStudents = async (keyword = "") => {
+            const { data } = await studentApi.list(facultyId, keyword).catch(() => ({ data: [] }));
+
+            if (!data.length) {
+                studentRows.innerHTML = '<tr><td colspan="4">Không có dữ liệu</td></tr>';
+                return;
+            }
+
+            studentRows.innerHTML = data.map((student) => `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>
+                        <button type="button" onclick="onEditStudent(${student.id})">Sửa</button>
+                        <button type="button" onclick="onDeleteStudent(${student.id})">Xóa</button>
+                    </td>
+                </tr>
+            `).join("");
+        };
+
+        const onResetForm = () => {
+            editingStudentId = null;
+            studentForm.reset();
+            document.getElementById("form-title").textContent = "Thêm sinh viên";
+        };
+
+        const onChangeFaculty = async (id) => {
+            facultyId = id;
+            studentSection.hidden = !facultyId;
+            searchForm.reset();
+            onResetForm();
+            if (facultyId) await fetchStudents();
+        };
+
+        const onEditStudent = async (id) => {
+            const { data } = await studentApi.detail(facultyId, id);
+            editingStudentId = id;
+            document.getElementById("form-title").textContent = "Sửa sinh viên";
+            studentForm.elements.name.value = data.name;
+            studentForm.elements.email.value = data.email;
+        };
+
+        const onDeleteStudent = async (id) => {
+            if (!window.confirm("Bạn có chắc muốn xóa sinh viên này không?")) return;
+            await studentApi.remove(facultyId, id);
+            if (editingStudentId === id) onResetForm();
+            await fetchStudents(searchForm.elements.keyword.value);
+        };
+
+        studentForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const data = {
+                name: studentForm.elements.name.value.trim(),
+                email: studentForm.elements.email.value.trim(),
+            };
+
+            if (editingStudentId) await studentApi.update(facultyId, editingStudentId, data);
+            else await studentApi.create(facultyId, data);
+
+            onResetForm();
+            await fetchStudents(searchForm.elements.keyword.value);
+        });
+
+        searchForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            await fetchStudents(searchForm.elements.keyword.value);
+        });
+
+        fetchFaculties();
+    </script>
+</body>
+</html>
