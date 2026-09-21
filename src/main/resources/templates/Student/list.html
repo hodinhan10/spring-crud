@@ -10,7 +10,7 @@
         <a href="/">Trang chủ</a>
         <a href="/faculty">Danh sách khoa</a>
         <h1>Danh sách sinh viên</h1>
-        <a id="create-student" href="/student/create">+ Thêm sinh viên</a>
+        <a href="/student/create">+ Thêm sinh viên</a>
         <br><br>
         <form id="search-form">
             <input name="keyword" placeholder="Tên hoặc email">
@@ -36,7 +36,6 @@
     <script src="/js/api.js"></script>
     <script>
         const studentRows = document.getElementById("student-rows");
-        const createStudent = document.getElementById("create-student");
         const searchForm = document.getElementById("search-form");
 
         const fetchStudents = async (keyword = "") => {
