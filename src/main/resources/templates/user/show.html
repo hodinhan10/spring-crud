@@ -3,16 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý người dùng</title>
-    <style>
-        table { border-collapse: collapse; }
-        table, th, td { border: 1px solid; }
-    </style>
 </head>
 <body>
     <h1>Danh sách người dùng</h1>
     <p><a th:href="@{/user/create}">Thêm người dùng</a></p>
 
-    <table>
+    <table border="1" cellpadding="8" cellspacing="0">
         <thead>
             <tr>
                 <th>ID</th>

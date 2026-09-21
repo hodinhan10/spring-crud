@@ -50,8 +50,9 @@ public class UserController {
 		return "user/update";
 	}
 
-	@PostMapping("/user/update")
-	public String postUpdatePage(@ModelAttribute User updateUser) {
+	@PostMapping("/user/{id}/update")
+	public String postUpdatePage(@PathVariable int id, @ModelAttribute User updateUser) {
+		updateUser.setId(id);
 		if (!this.userService.updateUser(updateUser)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}

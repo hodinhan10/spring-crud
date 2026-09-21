@@ -11,10 +11,9 @@
         <h1 th:text="${student.id == null ? 'Thêm sinh viên' : 'Cập nhật sinh viên'}"></h1>
 
         <form method="post" th:object="${student}"
-              th:action="${student.id == null} ? @{/student/create} : @{/student/update}">
-            <input type="hidden" th:field="*{id}">
+              th:action="${student.id == null} ? @{/student/create} : @{/student/{id}/update(id=${student.id})}">
 
-            <p th:if="${student.id == null}">
+            <p>
                 <label for="facultyId">Khoa</label>
                 <select id="facultyId" name="facultyId" required>
                     <option value="">-- Chọn khoa --</option>

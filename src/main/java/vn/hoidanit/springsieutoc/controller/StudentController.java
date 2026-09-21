@@ -57,8 +57,9 @@ public class StudentController {
         return "Student/CreateOrEdit";
     }
 
-    @PostMapping("/update")
-    public String updateStudent(@ModelAttribute Student student) {
+    @PostMapping("/{id}/update")
+    public String updateStudent(@PathVariable Long id, @ModelAttribute Student student) {
+        student.setId(id);
         if (!facultyService.updateStudent(student)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

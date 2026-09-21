@@ -7,8 +7,7 @@
 <body>
     <h1>Cập nhật người dùng</h1>
 
-    <form method="post" th:action="@{/user/update}" th:object="${user}">
-        <input type="hidden" th:field="*{id}">
+    <form method="post" th:action="@{/user/{id}/update(id=${user.id})}" th:object="${user}">
         <p>
             <label for="name">Tên</label>
             <input id="name" th:field="*{name}" required>
