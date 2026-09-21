@@ -2,6 +2,7 @@ package vn.hoidanit.springsieutoc.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,18 @@ public class FacultyService {
     public List<Student> getAllStudents() {
         return faculties.stream()
                 .flatMap(faculty -> faculty.getStudents().stream())
+                .toList();
+    }
+
+    public List<Student> getAllStudents(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return getAllStudents();
+        }
+
+        String searchKeyword = keyword.trim().toLowerCase(Locale.ROOT);
+        return getAllStudents().stream()
+                .filter(student -> student.getName().toLowerCase(Locale.ROOT).contains(searchKeyword)
+                        || student.getEmail().toLowerCase(Locale.ROOT).contains(searchKeyword))
                 .toList();
     }
 

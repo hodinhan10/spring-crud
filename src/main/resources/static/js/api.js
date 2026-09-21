@@ -1,6 +1,6 @@
 const userApi = {
-  list() {
-    return APIInstance.get("/users");
+  list(keyword = "") {
+    return APIInstance.get("/users", { params: { keyword } });
   },
   detail(id) {
     return APIInstance.get(`/users/${id}`);
@@ -23,8 +23,8 @@ const facultyApi = {
 };
 
 const studentApi = {
-  list() {
-    return APIInstance.get("/students");
+  list(keyword = "") {
+    return APIInstance.get("/students", { params: { keyword } });
   },
   detail(id) {
     return APIInstance.get(`/students/${id}`);

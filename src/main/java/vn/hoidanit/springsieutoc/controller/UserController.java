@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.springsieutoc.model.User;
@@ -27,8 +28,8 @@ public class UserController {
 	}
 
 	@GetMapping
-	public List<User> getUsers() {
-		return this.userService.fetchUsers();
+	public List<User> getUsers(@RequestParam(required = false) String keyword) {
+		return this.userService.fetchUsers(keyword);
 	}
 
 	@GetMapping("/{id}")

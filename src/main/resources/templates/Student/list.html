@@ -11,6 +11,12 @@
         <a href="/faculty">Danh sách khoa</a>
         <h1>Danh sách sinh viên</h1>
         <a id="create-student" href="/student/create">+ Thêm sinh viên</a>
+        <br><br>
+        <form id="search-form">
+            <input name="keyword" placeholder="Tên hoặc email">
+            <button type="submit">Tìm kiếm</button>
+        </form>
+        <br>
 
         <table border="1" cellpadding="8" cellspacing="0">
             <thead>
@@ -31,9 +37,10 @@
     <script>
         const studentRows = document.getElementById("student-rows");
         const createStudent = document.getElementById("create-student");
+        const searchForm = document.getElementById("search-form");
 
-        const fetchStudents = async () => {
-            const { data = [] } = await studentApi.list().catch(() => ({ data: [] }));
+        const fetchStudents = async (keyword = "") => {
+            const { data = [] } = await studentApi.list(keyword).catch(() => ({ data: [] }));
 
             if (!data.length) {
                 studentRows.innerHTML = '<tr><td colspan="4">Không có dữ liệu</td></tr>';
@@ -58,6 +65,11 @@
             await studentApi.remove(id);
             await fetchStudents();
         };
+
+        searchForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            await fetchStudents(searchForm.elements.keyword.value);
+        });
 
         fetchStudents();
     </script>

@@ -2,6 +2,7 @@ package vn.hoidanit.springsieutoc.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -22,6 +23,19 @@ public class UserService {
 
     public List<User> fetchUsers() {
         return new ArrayList<>(users);
+    }
+
+    public List<User> fetchUsers(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return fetchUsers();
+        }
+
+        String searchKeyword = keyword.trim().toLowerCase(Locale.ROOT);
+        return users.stream()
+                .filter(user -> user.getName().toLowerCase(Locale.ROOT).contains(searchKeyword)
+                        || user.getEmail().toLowerCase(Locale.ROOT).contains(searchKeyword)
+                        || user.getAddress().toLowerCase(Locale.ROOT).contains(searchKeyword))
+                .toList();
     }
 
     public Optional<User> fetchUserById(int id) {

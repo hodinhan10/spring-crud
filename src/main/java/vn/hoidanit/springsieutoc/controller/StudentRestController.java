@@ -28,8 +28,8 @@ public class StudentRestController {
     }
 
     @GetMapping
-    public List<Student> getStudents() {
-        return facultyService.getAllStudents();
+    public List<Student> getStudents(@RequestParam(required = false) String keyword) {
+        return facultyService.getAllStudents(keyword);
     }
 
     @GetMapping("/{id}")
