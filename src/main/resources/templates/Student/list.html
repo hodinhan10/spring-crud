@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách sinh viên</title>
+</head>
+<body>
+    <main>
+        <a href="/">Trang chủ</a>
+        <a href="/faculty">Danh sách khoa</a>
+        <h1>Danh sách sinh viên</h1>
+        <a th:href="@{/student/create}">+ Thêm sinh viên</a>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="student : ${students}">
+                    <td th:text="${student.id}"></td>
+                    <td th:text="${student.name}"></td>
+                    <td th:text="${student.email}"></td>
+                    <td>
+                        <a th:href="@{/student/{id}/edit(id=${student.id})}">Sửa</a>
+                        <form method="post" th:action="@{/student/delete/{id}(id=${student.id})}">
+                            <button type="submit">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(students)}">
+                    <td colspan="4">Không có dữ liệu</td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

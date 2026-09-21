@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Danh sách khoa</title>
+</head>
+<body>
+    <main>
+        <a href="/">Trang chủ</a>
+        <h1>Danh sách khoa</h1>
+        <label for="faculty-select">Chọn khoa</label>
+        <form method="get" th:action="@{/student}">
+            <select id="faculty-select" name="facultyId" required>
+                <option value="">-- Chọn khoa --</option>
+                <option th:each="faculty : ${faculties}"
+                        th:value="${faculty.id}"
+                        th:text="${faculty.name}"></option>
+            </select>
+            <button type="submit">Xem sinh viên</button>
+        </form>
+    </main>
+</body>
+</html>

@@ -1,0 +1,83 @@
+package vn.hoidanit.springsieutoc.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.stereotype.Service;
+
+import vn.hoidanit.springsieutoc.model.Faculty;
+import vn.hoidanit.springsieutoc.model.Student;
+
+@Service
+public class FacultyService {
+
+    private final List<Faculty> faculties;
+
+    public FacultyService() {
+        List<Student> csStudents = new ArrayList<>(List.of(
+                new Student(1L, "Alice Smith", "alice@example.com"),
+            new Student(2L, "Bob Jones", "bob@example.com")));
+
+        List<Student> engineeringStudents = new ArrayList<>(List.of(
+                new Student(3L, "Charlie Brown", "charlie@example.com"),
+            new Student(4L, "Diana Prince", "diana@example.com")));
+
+        faculties = new ArrayList<>(List.of(
+                new Faculty(1L, "Computer Science", csStudents),
+            new Faculty(2L, "Engineering", engineeringStudents)));
+    }
+
+    public List<Faculty> getAllFaculties() {
+        return faculties;
+    }
+
+    public Optional<Faculty> getFacultyById(Long id) {
+        return faculties.stream()
+                .filter(faculty -> faculty.getId().equals(id))
+                .findFirst();
+    }
+
+    public List<Student> getAllStudents() {
+        return faculties.stream()
+                .flatMap(faculty -> faculty.getStudents().stream())
+                .toList();
+    }
+
+    public Optional<List<Student>> getStudentsByFacultyId(Long facultyId) {
+        return getFacultyById(facultyId).map(Faculty::getStudents);
+    }
+
+    public Optional<Student> getStudentById(Long id) {
+        return getAllStudents().stream()
+                .filter(student -> student.getId().equals(id))
+                .findFirst();
+    }
+
+    public Optional<Student> createStudent(Long facultyId, Student student) {
+        return getFacultyById(facultyId).map(faculty -> {
+            long nextId = getAllStudents().stream()
+                    .mapToLong(existingStudent -> existingStudent.getId())
+                    .max()
+                    .orElse(0) + 1;
+            student.setId(nextId);
+            faculty.getStudents().add(student);
+            return student;
+        });
+    }
+
+    public boolean updateStudent(Student updatedStudent) {
+        Optional<Student> existingStudent = getStudentById(updatedStudent.getId());
+        if (existingStudent.isEmpty()) return false;
+
+        Student student = existingStudent.get();
+        student.setName(updatedStudent.getName());
+        student.setEmail(updatedStudent.getEmail());
+        return true;
+    }
+
+    public boolean deleteStudent(Long id) {
+        return faculties.stream()
+                .anyMatch(faculty -> faculty.getStudents()
+                        .removeIf(student -> student.getId().equals(id)));
+    }
+}

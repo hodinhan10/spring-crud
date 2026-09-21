@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quản lý sinh viên</title>
+</head>
+<body>
+    <main>
+        <a th:href="@{/student}">Danh sách sinh viên</a>
+        <h1 th:text="${student.id == null ? 'Thêm sinh viên' : 'Cập nhật sinh viên'}"></h1>
+
+        <form method="post" th:object="${student}"
+              th:action="${student.id == null} ? @{/student/create} : @{/student/update}">
+            <input type="hidden" th:field="*{id}">
+
+            <p th:if="${student.id == null}">
+                <label for="facultyId">Khoa</label>
+                <select id="facultyId" name="facultyId" required>
+                    <option value="">-- Chọn khoa --</option>
+                    <option th:each="faculty : ${faculties}"
+                            th:value="${faculty.id}"
+                            th:text="${faculty.name}"></option>
+                </select>
+            </p>
+            <p>
+                <label for="name">Tên</label>
+                <input id="name" th:field="*{name}" required>
+            </p>
+            <p>
+                <label for="email">Email</label>
+                <input id="email" type="email" th:field="*{email}" required>
+            </p>
+            <button type="submit" th:text="${student.id == null ? 'Lưu' : 'Cập nhật'}"></button>
+            <a th:href="@{/student}">Hủy</a>
+        </form>
+    </main>
+</body>
+</html>

@@ -52,7 +52,7 @@ public class UserController {
 
 	@PostMapping("/user/update")
 	public String postUpdatePage(@ModelAttribute User updateUser) {
-		if (this.userService.updateUser(updateUser)) {
+		if (!this.userService.updateUser(updateUser)) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 		}
 		return "redirect:/user";
