@@ -23,19 +23,19 @@ const facultyApi = {
 };
 
 const studentApi = {
-  list(keyword = "") {
-    return APIInstance.get("/students", { params: { keyword } });
+  list(facultyId, keyword = "") {
+    return APIInstance.get(`/faculties/${facultyId}/students`, { params: { keyword } });
   },
-  detail(id) {
-    return APIInstance.get(`/students/${id}`);
+  detail(facultyId, studentId) {
+    return APIInstance.get(`/faculties/${facultyId}/students/${studentId}`);
   },
   create(facultyId, data) {
-    return APIInstance.post(`/students?facultyId=${facultyId}`, data);
+    return APIInstance.post(`/faculties/${facultyId}/students`, data);
   },
-  update(id, data) {
-    return APIInstance.put(`/students/${id}`, data);
+  update(facultyId, studentId, data) {
+    return APIInstance.put(`/faculties/${facultyId}/students/${studentId}`, data);
   },
-  remove(id) {
-    return APIInstance.delete(`/students/${id}`);
+  remove(facultyId, studentId) {
+    return APIInstance.delete(`/faculties/${facultyId}/students/${studentId}`);
   },
 };

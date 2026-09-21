@@ -9,6 +9,7 @@
     <main>
         <a href="/">Trang chủ</a>
         <h1>Danh sách khoa</h1>
+
         <label for="faculty-select">Chọn khoa</label>
         <select id="faculty-select" onchange="onGoToStudents(this.value)">
             <option value="">-- Chọn khoa --</option>
@@ -29,7 +30,7 @@
         };
 
         const onGoToStudents = (facultyId) => {
-            if (facultyId) window.location.href = `/student?facultyId=${facultyId}`;
+            if (facultyId) window.location.href = `/faculty/${facultyId}/students`;
         };
 
         fetchFaculties();

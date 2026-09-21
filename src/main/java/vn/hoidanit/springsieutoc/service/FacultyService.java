@@ -44,22 +44,28 @@ public class FacultyService {
                 .toList();
     }
 
-    public List<Student> getAllStudents(String keyword) {
+    public Optional<List<Student>> getStudentsByFacultyId(Long facultyId, String keyword) {
+        return getFacultyById(facultyId)
+                .map(faculty -> filterStudents(faculty.getStudents(), keyword));
+    }
+
+    private List<Student> filterStudents(List<Student> students, String keyword) {
         if (keyword == null || keyword.isBlank()) {
-            return getAllStudents();
+            return students;
         }
 
         String searchKeyword = keyword.trim().toLowerCase(Locale.ROOT);
-        return getAllStudents().stream()
+        return students.stream()
                 .filter(student -> student.getName().toLowerCase(Locale.ROOT).contains(searchKeyword)
                         || student.getEmail().toLowerCase(Locale.ROOT).contains(searchKeyword))
                 .toList();
     }
 
-    public Optional<Student> getStudentById(Long id) {
-        return getAllStudents().stream()
-                .filter(student -> student.getId().equals(id))
-                .findFirst();
+    public Optional<Student> getStudentByFacultyId(Long facultyId, Long studentId) {
+        return getFacultyById(facultyId)
+                .flatMap(faculty -> faculty.getStudents().stream()
+                        .filter(student -> student.getId().equals(studentId))
+                        .findFirst());
     }
 
     public Optional<Student> createStudent(Long facultyId, Student student) {
@@ -73,8 +79,8 @@ public class FacultyService {
         });
     }
 
-    public boolean updateStudent(Student updatedStudent) {
-        Optional<Student> existingStudent = getStudentById(updatedStudent.getId());
+    public boolean updateStudent(Long facultyId, Long studentId, Student updatedStudent) {
+        Optional<Student> existingStudent = getStudentByFacultyId(facultyId, studentId);
         if (existingStudent.isEmpty()) {
             return false;
         }
@@ -85,8 +91,10 @@ public class FacultyService {
         return true;
     }
 
-    public boolean deleteStudent(Long id) {
-        return faculties.stream()
-                .anyMatch(faculty -> faculty.getStudents().removeIf(student -> student.getId().equals(id)));
+    public boolean deleteStudent(Long facultyId, Long studentId) {
+        return getFacultyById(facultyId)
+                .map(faculty -> faculty.getStudents()
+                        .removeIf(student -> student.getId().equals(studentId)))
+                .orElse(false);
     }
 }

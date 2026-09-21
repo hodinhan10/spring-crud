@@ -7,11 +7,12 @@
 </head>
 <body>
     <main>
-        <a href="/">Trang chủ</a>
+        <a href="/">Trang chủ</a> <br>
         <a href="/faculty">Danh sách khoa</a>
         <h1>Danh sách sinh viên</h1>
-        <a href="/student/create">+ Thêm sinh viên</a>
+        <a id="create-student" href="#">+ Thêm sinh viên</a>
         <br><br>
+
         <form id="search-form">
             <input name="keyword" placeholder="Tên hoặc email">
             <button type="submit">Tìm kiếm</button>
@@ -37,9 +38,12 @@
     <script>
         const studentRows = document.getElementById("student-rows");
         const searchForm = document.getElementById("search-form");
+        const [, , facultyId] = window.location.pathname.split("/");
+        document.getElementById("create-student").href = `/faculty/${facultyId}/students/create`;
 
         const fetchStudents = async (keyword = "") => {
-            const { data = [] } = await studentApi.list(keyword).catch(() => ({ data: [] }));
+            const { data = [] } = await studentApi.list(facultyId, keyword)
+                .catch(() =>  window.location.href = `/faculty`);
 
             if (!data.length) {
                 studentRows.innerHTML = '<tr><td colspan="4">Không có dữ liệu</td></tr>';
@@ -52,7 +56,7 @@
                     <td>${student.name}</td>
                     <td>${student.email}</td>
                     <td>
-                        <a href="/student/${student.id}/edit">Sửa</a>
+                        <a href="/faculty/${facultyId}/students/edit/${student.id}">Sửa</a>
                         <button onclick="onDeleteStudent(${student.id})">Xóa</button>
                     </td>
                 </tr>
@@ -61,7 +65,7 @@
 
         const onDeleteStudent = async (id) => {
             if (!window.confirm("Bạn có chắc muốn xóa sinh viên này không?")) return;
-            await studentApi.remove(id);
+            await studentApi.remove(facultyId, id);
             await fetchStudents();
         };
 

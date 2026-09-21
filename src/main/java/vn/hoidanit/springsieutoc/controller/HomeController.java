@@ -21,7 +21,7 @@ public class HomeController {
 		return "user/CreateOrEdit";
 	}
 
-	@GetMapping("/user/{id}/edit")
+	@GetMapping("/user/edit/{id}")
 	public String updateUser() {
 		return "user/CreateOrEdit";
 	}
@@ -31,17 +31,17 @@ public class HomeController {
 		return "Faculty";
 	}
 
-	@GetMapping("/student")
-	public String students() {
+	@GetMapping("/faculty/{facultyId}/students")
+	public String studentsByFaculty() {
 		return "Student/list";
 	}
 
-	@GetMapping("/student/create")
+	@GetMapping("/faculty/{facultyId}/students/create")
 	public String createStudent() {
 		return "Student/CreateOrEdit";
 	}
 
-	@GetMapping("/student/{id}/edit")
+	@GetMapping("/faculty/{facultyId}/students/edit/{studentId}")
 	public String updateStudent() {
 		return "Student/CreateOrEdit";
 	}

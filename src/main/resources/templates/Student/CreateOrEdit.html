@@ -26,15 +26,8 @@
 </head>
 <body>
     <main>
-        <a href="/student">Danh sách sinh viên</a>
         <h1 id="title"></h1>
         <form class="form" id="form">
-            <div class="field" id="faculty-field">
-                <label for="facultyId">Khoa</label>
-                <select id="facultyId" name="facultyId" required>
-                    <option value="">-- Chọn khoa --</option>
-                </select>
-            </div>
             <div class="field">
                 <label for="name">Tên</label>
                 <input id="name" name="name" required>
@@ -45,7 +38,7 @@
             </div>
             <div class="actions">
                 <button id="submit" type="submit">Lưu</button>
-                <a href="/student">Hủy</a>
+                <a id="cancel-link" href="#">Hủy</a>
             </div>
         </form>
     </main>
@@ -56,26 +49,18 @@
     
     <script>
         const form = document.getElementById("form");
-        const studentId = window.location.pathname.split("/")[2];
+        const [, , facultyId, , , studentId] = window.location.pathname.split("/");
         const isEdit = Number(studentId);
-        const facultySelect = document.getElementById("facultyId");
+        document.getElementById("cancel-link").href = `/faculty/${facultyId}/students`;
 
         document.getElementById("title").textContent = isEdit ? "Cập nhật sinh viên" : "Thêm sinh viên";
         document.getElementById("submit").textContent = isEdit ? "Cập nhật" : "Lưu";
 
-        const fetchFaculties = async () => {
-            const { data } = await facultyApi.list().catch(() => ({ data: [] }));
-            facultySelect.innerHTML = facultySelect.innerHTML + 
-            data.map((faculty) => `
-                <option value="${faculty.id}">${faculty.name}</option>
-            `).join("");
-        };
-
         const fetchStudent = async () => {
             if (!isEdit) return;
-            document.getElementById("faculty-field").hidden = true;
 
-            const { data } = await studentApi.detail(studentId).catch(() => ({ data: null }));
+            const { data } = await studentApi.detail(facultyId, studentId)
+                .catch(() =>  window.location.href = `/faculty`);
             if (!data) return;
 
             form.elements.name.value = data.name;
@@ -89,14 +74,13 @@
                 email: form.elements.email.value.trim(),
             };
 
-            if (isEdit) await studentApi.update(studentId, data);
-            else await studentApi.create(facultySelect.value, data);
+            if (isEdit) await studentApi.update(facultyId, studentId, data);
+            else await studentApi.create(facultyId, data);
             
-            window.location.href = "/student";
+            window.location.href = studentListUrl;
         });
 
     fetchStudent();
-    fetchFaculties();
     </script>
 </body>
 </html>

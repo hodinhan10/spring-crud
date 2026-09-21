@@ -9,6 +9,7 @@
 
 <body>
     <main>
+        <a href="/">Trang chủ</a><br>
         <a href="/user/create">+ Thêm người dùng</a>
         <br><br>
         <form id="search-form">
@@ -51,7 +52,7 @@
                     <td>${user.email}</td>
                     <td>${user.address}</td>
                     <td>
-                        <a href="/user/${user.id}/edit">Sửa</a>
+                        <a href="/user/edit/${user.id}">Sửa</a>
                         <button onclick="onDeleteUser(${user.id})">Xóa</button>
                     </td>
                 </tr>
